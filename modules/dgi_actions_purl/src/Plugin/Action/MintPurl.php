@@ -63,7 +63,7 @@ class MintPurl extends MintIdentifier {
    * {@inheritdoc}
    */
   protected function mint(): string {
-    return $this->getIdentifier()->getServiceData()->getData()['host'];
+    return 'sample_identifier_value';
   }
 
 
