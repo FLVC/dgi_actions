@@ -1,0 +1,7 @@
+name: 'DGI Actions PURL'
+description: "Provides integration with FLVC PURL application for minting identifiers."
+type: module
+package: DGI Actions
+core_version_requirement: ^8 || ^9
+dependencies:
+  - dgi_actions:dgi_actions

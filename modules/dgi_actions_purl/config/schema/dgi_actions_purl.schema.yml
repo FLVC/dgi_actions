@@ -1,0 +1,16 @@
+dgi_actions.service_data_type.purl:
+  type: mapping
+  label: 'PURL Service Data'
+  mapping:
+    host:
+      type: uri
+      label: 'PURL Service Hostname'
+      description: 'Host address for the PURL service endpoints.'
+    apikey:
+      label: 'API Key'
+      type: string
+      description: 'API key for the PURL service endpoints.'
+    target:
+      label: 'Target Hostname'
+      type: uri
+      description: 'PURL target site hostname.'
