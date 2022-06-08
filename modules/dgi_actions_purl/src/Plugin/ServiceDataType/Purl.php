@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\dgi_actions_handle\Plugin\ServiceDataType;
+namespace Drupal\dgi_actions_purl\Plugin\ServiceDataType;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\dgi_actions\Plugin\ServiceDataTypeBase;

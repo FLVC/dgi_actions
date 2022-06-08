@@ -1,9 +1,8 @@
 <?php
 
-namespace Drupal\dgi_actions_handle\Plugin\Action;
+namespace Drupal\dgi_actions_purl\Plugin\Action;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\dgi_actions\Plugin\Action\HttpActionMintTrait;
 use Drupal\dgi_actions\Plugin\Action\MintIdentifier;
 use Drupal\dgi_actions\Utility\IdentifierUtils;
 use GuzzleHttp\ClientInterface;
