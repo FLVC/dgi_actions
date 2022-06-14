@@ -75,22 +75,24 @@ class MintPurl extends MintIdentifier {
    * {@inheritdoc}
    */
   protected function getRequestParams(): array {
+
     $path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
     $path = trim($path, '/');
+
+    $data = [];
+    $data['purlPath'] = '/flvc/demopurl/' . $path;
+    $data['type'] = '301';
+    $data['target'] = $this->getExternalUrl();
+    $data['institutionCode'] = 'FLVC';
+
+    $body = $this->buildPurlRequestBody($data);
 
     return [
       'headers' => [
         'Content-Type' => 'application/json;charset=UTF-8',
         'KiwiApiKey' => $this->getApikey(),
       ],
-      'json' => [
-        [
-          'purlPath' => '/flvc/demopurl/' . $path,
-          'type' => '301',
-          'target' => $this->getExternalUrl(),
-          'institutionCode' => 'FLVC',
-        ],
-      ],
+      'body' => $body,
     ];
   }
 
