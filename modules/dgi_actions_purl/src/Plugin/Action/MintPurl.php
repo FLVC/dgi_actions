@@ -3,8 +3,10 @@
 namespace Drupal\dgi_actions_purl\Plugin\Action;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\dgi_actions\Plugin\Action\HttpActionMintTrait;
 use Drupal\dgi_actions\Plugin\Action\MintIdentifier;
 use Drupal\dgi_actions\Utility\IdentifierUtils;
+use Drupal\dgi_actions_purl\Utility\PurlTrait;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -20,6 +22,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class MintPurl extends MintIdentifier {
+
+  use HttpActionMintTrait;
+  use PurlTrait;
 
   /**
    * Constructor.
@@ -62,9 +67,53 @@ class MintPurl extends MintIdentifier {
   /**
    * {@inheritdoc}
    */
-  protected function mint(): string {
-    return 'sample_identifier_value';
+  protected function getRequestType(): string {
+    return 'POST';
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getRequestParams(): array {
+    $path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
+    $path = trim($path, '/');
+
+    return [
+      'headers' => [
+        'Content-Type' => 'application/json;charset=UTF-8',
+        'KiwiApiKey' => $this->getApikey(),
+      ],
+      'json' => [
+        [
+          'purlPath' => '/flvc/demopurl/' . $path,
+          'type' => '301',
+          'target' => $this->getExternalUrl(),
+          'institutionCode' => 'FLVC',
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function mint(): string {
+    //return 'sample_identifier_value';
+    return $this->getIdentifierFromResponse($this->purlRequest());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getIdentifierFromResponse(ResponseInterface $response): string {
+    $body = json_decode($response->getBody(), TRUE);
+    $this->logger->info('PURL minted for @type/@id: @purlPath.', [
+      '@type' => $this->getEntity()->getEntityTypeId(),
+      '@id' => $this->getEntity()->id(),
+      '@purlPath' => $body['purlPath'],
+    ]);
+    //return "sample_purl_identifier_from_response";
+    return $this->getHost() . $body['purlPath'];
+  }
 
 }
