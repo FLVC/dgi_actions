@@ -85,7 +85,7 @@ class MintPurl extends MintIdentifier {
     $data['target'] = $this->getExternalUrl();
     $data['institutionCode'] = 'FLVC';
 
-    $body = $this->buildPurlRequestBody($data);
+    $body = json_encode($data, JSON_UNESCAPED_SLASHES);
 
     return [
       'headers' => [

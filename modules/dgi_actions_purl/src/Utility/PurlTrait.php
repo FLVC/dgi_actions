@@ -75,25 +75,6 @@ trait PurlTrait {
   }
 
   /**
-   * Builds the request content body for the PURL service.
-   *
-   * Build the request content body from a supplied key-value array.
-   *
-   * @param array $data
-   *   The key-value array of data to be formatted.
-   *
-   * @return string
-   *   The request content body.
-   */
-  public function buildPurlRequestBody(array $data): string {
-    $output = "";
-    foreach ($data as $key => $val) {
-      $output .= "$key: $val\r\n";
-    }
-    return $output;
-  }
-
-  /**
    * Helper that wraps the normal requests to get more verbosity for errors.
    */
   protected function purlRequest() {
