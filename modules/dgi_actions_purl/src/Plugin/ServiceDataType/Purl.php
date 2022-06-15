@@ -60,6 +60,20 @@ class Purl extends ServiceDataTypeBase {
       '#default_value' => $this->configuration['apikey'],
       '#required' => TRUE,
     ];
+    $form['domain'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('PURL Domain'),
+      '#description' => $this->t('Domain for the PURL service.'),
+      '#default_value' => $this->configuration['domain'],
+      '#required' => TRUE,
+    ];
+    $form['institution'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('PURL Institution Code'),
+      '#description' => $this->t('Institution code for the PURL service.'),
+      '#default_value' => $this->configuration['institution'],
+      '#required' => TRUE,
+    ];
     $form['target'] = [
       '#type' => 'url',
       '#title' => $this->t('Target Hostname'),
@@ -76,6 +90,8 @@ class Purl extends ServiceDataTypeBase {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['host'] = $form_state->getValue('host');
     $this->configuration['apikey'] = $form_state->getValue('apikey');
+    $this->configuration['domain'] = $form_state->getValue('domain');
+    $this->configuration['institution'] = $form_state->getValue('institution');
     $this->configuration['target'] = $form_state->getValue('target');
   }
 

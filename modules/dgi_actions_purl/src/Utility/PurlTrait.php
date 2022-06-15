@@ -50,6 +50,20 @@ trait PurlTrait {
   }
 
   /**
+   * Gets the PURL domain.
+   */
+  public function getDomain(): string {
+    return $this->getIdentifier()->getServiceData()->getData()['domain'];
+  }
+
+  /**
+   * Gets the PURL institution code.
+   */
+  public function getInstitution(): string {
+    return $this->getIdentifier()->getServiceData()->getData()['institution'];
+  }
+
+  /**
    * Gets the PURL target.
    */
   public function getTarget(): string {

@@ -10,7 +10,15 @@ dgi_actions.service_data_type.purl:
       label: 'API Key'
       type: string
       description: 'API key for the PURL service endpoints.'
+    domain:
+      label: 'PURL Domain'
+      type: string
+      description: 'Domain for the PURL service.'
+    institution:
+      label: 'PURL Institution Code'
+      type: string
+      description: 'Institution code for the PURL service.'
     target:
-      label: 'Target Hostname'
+      label: 'PURL Target Hostname'
       type: uri
-      description: 'PURL target site hostname.'
+      description: 'Target site hostname for the PURL service.'

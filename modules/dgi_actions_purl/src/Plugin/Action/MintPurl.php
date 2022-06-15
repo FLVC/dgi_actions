@@ -81,11 +81,11 @@ class MintPurl extends MintIdentifier {
     $path = trim($path, '/');
 
     $data = [];
-    $data['purlPath'] = '/flvc/demo/' . $path;
+    $data['purlPath'] = $this->getDomain() . '/demo/' . $path;
     $data['type'] = '301';
     //$data['target'] = $this->getExternalUrl();
     $data['target'] = $this->getTarget() . '/' . $path;
-    $data['institutionCode'] = 'FLVC';
+    $data['institutionCode'] = $this->getInstitution();
 
     $body = json_encode($data, JSON_UNESCAPED_SLASHES);
 
