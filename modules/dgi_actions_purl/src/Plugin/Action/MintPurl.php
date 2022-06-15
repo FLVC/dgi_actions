@@ -77,7 +77,7 @@ class MintPurl extends MintIdentifier {
   protected function getRequestParams(): array {
 
     //$path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
-    $path = $this->getEntity()->toUrl()->toString(TRUE);
+    $path = $this->getEntity()->toUrl()->toString(TRUE)->getGeneratedUrl();
     $path = trim($path, '/');
 
     $data = [];
