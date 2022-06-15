@@ -81,7 +81,7 @@ class MintPurl extends MintIdentifier {
     $path = trim($path, '/');
 
     $data = [];
-    $data['purlPath'] = '/flvc/demopurl/' . $path;
+    $data['purlPath'] = '/flvc/demo/' . $path;
     $data['type'] = '301';
     //$data['target'] = $this->getExternalUrl();
     $data['target'] = $this->getTarget() . '/' . $path;

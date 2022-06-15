@@ -111,9 +111,10 @@ trait PurlTrait {
    */
   protected function mapPurlResponseCodes(Response $response) {
     $mapping = [
-      '201' => t('Successful creation'),
+      '201' => t('Successful PURL request'),
       '400' => t('Invalid PURL'),
       '401' => t('Invalid API key'),
+      '404' => t('PURL not found'),
     ];
 
     $body = $response->getBody();
