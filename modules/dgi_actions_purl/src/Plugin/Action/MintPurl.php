@@ -76,13 +76,15 @@ class MintPurl extends MintIdentifier {
    */
   protected function getRequestParams(): array {
 
-    $path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
+    //$path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
+    $path = $this->getEntity()->toUrl()->toString(TRUE);
     $path = trim($path, '/');
 
     $data = [];
     $data['purlPath'] = '/flvc/demopurl/' . $path;
     $data['type'] = '301';
-    $data['target'] = $this->getExternalUrl();
+    //$data['target'] = $this->getExternalUrl();
+    $data['target'] = $this->getTarget() . '/' . $path;
     $data['institutionCode'] = 'FLVC';
 
     $body = json_encode($data, JSON_UNESCAPED_SLASHES);
