@@ -142,7 +142,7 @@ trait PurlTrait {
     try {
       $response = $this->getClient()->send($request, $requestParams);
       $body = $response->getBody();
-      $this->logger->info("DEBUG body={$body}");
+      //$this->logger->info("DEBUG body={$body}");
       if ($body) {
         $json = json_decode($body, TRUE);
         return $json['purlId'] ?? 0;

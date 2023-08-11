@@ -76,6 +76,7 @@ class UpdatePurl extends UpdateIdentifier {
     if ($this->purlId > 0) {
         $uri .= "/{$this->purlId}";
     }
+    $this->logger->info("DEBUG update URI = {$uri}");
     return $uri;
   }
 
@@ -90,6 +91,7 @@ class UpdatePurl extends UpdateIdentifier {
     if ($this->purlId > 0) {
         $requestType = 'PUT';
     }
+    $this->logger->info("DEBUG update RequestType = {$requestType}");
     return $requestType;
   }
 
@@ -148,7 +150,7 @@ class UpdatePurl extends UpdateIdentifier {
     $this->purlId = $this->getPurlId($purlPath);
     $this->logger->info("purlPath {$purlPath} has purlId {$this->purlId}");
 
-    //return $this->handleUpdateResponse($this->purlRequest());
+    $this->handleUpdateResponse($this->purlRequest());
     return;
   }
 
