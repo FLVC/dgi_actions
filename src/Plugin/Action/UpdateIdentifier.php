@@ -25,6 +25,13 @@ abstract class UpdateIdentifier extends IdentifierAction {
           $this->update();
         }
       }
+      catch (UndefinedLinkTemplateException $ulte) {
+        $this->logger->warning('Updating failed for @type/@id: Error retrieving Entity URL: @errorMessage', [
+          '@type' => $this->getEntity()->getEntityTypeId(),
+          '@id' => $this->getEntity()->id(),
+          '@errorMessage' => $ulte->getMessage(),
+        ]);
+      }
       catch (\InvalidArgumentException $iae) {
         $this->logger->error('Updating failed for @type/@id: Configured field not found on Entity: @iae', [
           '@type' => $this->getEntity()->getEntityTypeId(),

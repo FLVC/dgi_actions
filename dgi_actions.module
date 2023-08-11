@@ -9,6 +9,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\dgi_actions\Plugin\ContextReaction\EntityDeleteReaction;
 use Drupal\dgi_actions\Plugin\ContextReaction\EntityMintReaction;
+use Drupal\dgi_actions\Plugin\ContextReaction\EntityUpdateReaction;
 
 /**
  * Implements hook_entity_insert().
@@ -24,6 +25,9 @@ function dgi_actions_entity_insert(EntityInterface $entity) {
   if (\Drupal::service('islandora.utils')->haveFieldsChanged($entity, $original_entity)) {
     $entity->save();
   }
+  else {
+    $utils->executeEntityReactions(EntityUpdateReaction::class, $entity);
+  }
 }
 
 /**
@@ -37,6 +41,17 @@ function dgi_actions_entity_presave(EntityInterface $entity) {
     $utils = \Drupal::service('dgi_actions.dgiutils');
     $utils->executeEntityReactions(EntityMintReaction::class, $entity);
   }
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function dgi_actions_entity_update(EntityInterface $entity) {
+  if (!$entity instanceof ContentEntityInterface) {
+    return;
+  }
+  $utils = \Drupal::service('dgi_actions.dgiutils');
+  $utils->executeEntityReactions(EntityUpdateReaction::class, $entity);
 }
 
 /**

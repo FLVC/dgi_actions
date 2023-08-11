@@ -5,6 +5,7 @@ namespace Drupal\dgi_actions_purl\Utility;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\dgi_actions\Plugin\Action\HttpActionTrait;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -79,16 +80,6 @@ trait PurlTrait {
   }
 
   /**
-   * Returns the PURL REST API endpoint.
-   *
-   * @return string
-   *   The URL to be used for PURL requests.
-   */
-  protected function getUri(): string {
-    return "{$this->getIdentifier()->getServiceData()->getData()['host']}/api/purl";
-  }
-
-  /**
    * Helper that wraps the normal requests to get more verbosity for errors.
    */
   protected function purlRequest() {
@@ -139,6 +130,27 @@ trait PurlTrait {
       }
     }
     return FALSE;
+  }
+
+  protected function getPurlId(string $purlPath): int {
+    $request = new Request('GET', "{$this->getHost()}/admin/purl{$purlPath}");
+    $requestParams = array([
+      'headers' => [
+        'Content-Type' => 'application/json;charset=UTF-8'
+    ]]);
+    $this->logger->info("DEBUG trying {$this->getHost()}/admin/purl{$purlPath}");
+    try {
+      $response = $this->getClient()->send($request, $requestParams);
+      $body = $response->getBody();
+      $this->logger->info("DEBUG body={$body}");
+      if ($body) {
+        $json = json_decode($body, TRUE);
+        return $json['purlId'] ?? 0;
+      }
+    }
+    catch (RequestException $e) {
+      return 0;
+    }
   }
 
 }

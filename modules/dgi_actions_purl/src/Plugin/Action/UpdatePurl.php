@@ -3,8 +3,8 @@
 namespace Drupal\dgi_actions_purl\Plugin\Action;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\dgi_actions\Plugin\Action\HttpActionMintTrait;
-use Drupal\dgi_actions\Plugin\Action\MintIdentifier;
+use Drupal\dgi_actions\Plugin\Action\HttpActionUpdateTrait;
+use Drupal\dgi_actions\Plugin\Action\UpdateIdentifier;
 use Drupal\dgi_actions\Utility\IdentifierUtils;
 use Drupal\dgi_actions_purl\Utility\PurlTrait;
 use GuzzleHttp\ClientInterface;
@@ -13,18 +13,20 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Mints a PURL.
+ * Updates a PURL.
  *
  * @Action(
- *   id = "dgi_actions_mint_purl",
- *   label = @Translation("Mint a PURL"),
+ *   id = "dgi_actions_update_purl",
+ *   label = @Translation("Update a PURL"),
  *   type = "entity"
  * )
  */
-class MintPurl extends MintIdentifier {
+class UpdatePurl extends UpdateIdentifier {
 
-  use HttpActionMintTrait;
+  use HttpActionUpdateTrait;
   use PurlTrait;
+
+  private int $purlId = 0;
 
   /**
    * Constructor.
@@ -68,14 +70,27 @@ class MintPurl extends MintIdentifier {
    * {@inheritdoc}
    */
   protected function getUri(): string {
-    return "{$this->getHost()}/api/purl";
+    // request URI depends on whether PURL exists
+    // add purlId if PURL exists
+    $uri = "{$this->getHost()}/api/purl";
+    if ($this->purlId > 0) {
+        $uri .= "/{$this->purlId}";
+    }
+    return $uri;
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getRequestType(): string {
-    return 'POST';
+    // request type depends on whether PURL exists
+    // create if PURL does not exist
+    // update if PURL exists
+    $requestType = 'POST';
+    if ($this->purlId > 0) {
+        $requestType = 'PUT';
+    }
+    return $requestType;
   }
 
   /**
@@ -88,9 +103,10 @@ class MintPurl extends MintIdentifier {
     $path = trim($path, '/');
 
     $data = [];
-    $data['purlPath'] = $this->getDomain() . '/demo/' . $path;
+    // need to get purlPath value from entity
+    //$data['purlPath'] = $this->getDomain() . '/demo/' . $path;
+    $data['purlPath'] = str_replace($this->getHost(), '', $this->getIdentifierFromEntity());
     $data['type'] = '301';
-    //$data['target'] = $this->getExternalUrl();
     $data['target'] = $this->getTarget() . '/' . $path;
     $data['institutionCode'] = $this->getInstitution();
 
@@ -108,24 +124,46 @@ class MintPurl extends MintIdentifier {
   /**
    * {@inheritdoc}
    */
-  protected function mint(): string {
-    //return 'sample_identifier_value';
-    $this->logger->info("DEBUG in mint for missing identifier");
-    return $this->getIdentifierFromResponse($this->purlRequest());
+  protected function update(): void {
+    // check for existing purlId
+    $this->logger->info("DEBUG in update");
+    $field = $this->getIdentifier()->get('field');
+    if ($this->getEntity()->hasField($field)) {
+      $this->logger->info("DEBUG entity has identifier field");
+      $field_value = $this->getEntity()->get($field)->getString();
+      if (!empty($field_value)) {
+        $this->logger->info("DEBUG entity has identifier value {$field_value}");
+      }
+      else {
+        $this->logger->info("DEBUG entity has empty identifier field");
+        return;
+      }
+    }
+    else {
+      $this->logger->info("DEBUG entity is missing identifier field");
+      return;
+    }
+    //$this->logger->info("DEBUG in update for identifier {$this->getIdentifierFromEntity()}");
+    $purlPath = str_replace($this->getHost(), '', $this->getIdentifierFromEntity());
+    $this->purlId = $this->getPurlId($purlPath);
+    $this->logger->info("purlPath {$purlPath} has purlId {$this->purlId}");
+
+    //return $this->handleUpdateResponse($this->purlRequest());
+    return;
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getIdentifierFromResponse(ResponseInterface $response): string {
+  protected function handleUpdateResponse(ResponseInterface $response): void {
     $body = json_decode($response->getBody(), TRUE);
-    $this->logger->info('PURL minted for @type/@id: @purlPath.', [
+    $this->logger->info('PURL updated for @type/@id: @purlPath.', [
       '@type' => $this->getEntity()->getEntityTypeId(),
       '@id' => $this->getEntity()->id(),
       '@purlPath' => $body['purlPath'],
     ]);
-    //return "sample_purl_identifier_from_response";
-    return $this->getHost() . $body['purlPath'];
+
+    return;
   }
 
 }
