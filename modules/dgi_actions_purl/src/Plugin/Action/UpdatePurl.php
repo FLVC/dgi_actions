@@ -27,6 +27,7 @@ class UpdatePurl extends UpdateIdentifier {
   use PurlTrait;
 
   private int $purlId = 0;
+  private string $purlPath;
 
   /**
    * Constructor.
@@ -107,7 +108,7 @@ class UpdatePurl extends UpdateIdentifier {
     $data = [];
     // need to get purlPath value from entity
     //$data['purlPath'] = $this->getDomain() . '/demo/' . $path;
-    $data['purlPath'] = str_replace($this->getHost(), '', $this->getIdentifierFromEntity());
+    $data['purlPath'] = $this->purlPath;
     $data['type'] = '301';
     $data['target'] = $this->getTarget() . '/' . $path;
     $data['institutionCode'] = $this->getInstitution();
@@ -145,12 +146,16 @@ class UpdatePurl extends UpdateIdentifier {
       $this->logger->info("DEBUG entity is missing identifier field");
       return;
     }
-    //$this->logger->info("DEBUG in update for identifier {$this->getIdentifierFromEntity()}");
-    $purlPath = str_replace($this->getHost(), '', $this->getIdentifierFromEntity());
-    $this->purlId = $this->getPurlId($purlPath);
-    $this->logger->info("purlPath {$purlPath} has purlId {$this->purlId}");
+    $purlList =  $this->getEntity()->get($field)->getValue();
+    foreach ($purlList as $purl) {
+      dump($purl);
+      $this->logger->info("DEBUG run update for identifier {$purl['uri']}");
+      $this->purlPath = str_replace($this->getHost(), '', $purl['uri']);
+      $this->purlId = $this->getPurlId($this->purlPath);
+      $this->logger->info("purlPath {$this->purlPath} has purlId {$this->purlId}");
 
-    $this->handleUpdateResponse($this->purlRequest());
+      $this->handleUpdateResponse($this->purlRequest());
+    }
     return;
   }
 
