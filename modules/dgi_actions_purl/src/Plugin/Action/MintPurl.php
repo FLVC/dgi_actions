@@ -83,14 +83,13 @@ class MintPurl extends MintIdentifier {
    */
   protected function getRequestParams(): array {
 
-    $path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
-    //$path = $this->getEntity()->toUrl()->toString(TRUE)->getGeneratedUrl();
+    $externalUrl = $this->entity->toUrl()->setAbsolute()->setOption('alias', TRUE)->toString(TRUE)->getGeneratedUrl();
+    $path = parse_url($externalUrl, PHP_URL_PATH);
     $path = trim($path, '/');
 
     $data = [];
     $data['purlPath'] = $this->getDomain() . '/demo/' . $path;
     $data['type'] = '301';
-    //$data['target'] = $this->getExternalUrl();
     $data['target'] = $this->getTarget() . '/' . $path;
     $data['institutionCode'] = $this->getInstitution();
 
@@ -109,7 +108,6 @@ class MintPurl extends MintIdentifier {
    * {@inheritdoc}
    */
   protected function mint(): string {
-    //return 'sample_identifier_value';
     $this->logger->info("DEBUG in mint for missing identifier");
     return $this->getIdentifierFromResponse($this->purlRequest());
   }
@@ -124,7 +122,6 @@ class MintPurl extends MintIdentifier {
       '@id' => $this->getEntity()->id(),
       '@purlPath' => $body['purlPath'],
     ]);
-    //return "sample_purl_identifier_from_response";
     return $this->getHost() . $body['purlPath'];
   }
 

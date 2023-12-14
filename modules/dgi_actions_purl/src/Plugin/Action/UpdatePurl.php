@@ -101,13 +101,12 @@ class UpdatePurl extends UpdateIdentifier {
    */
   protected function getRequestParams(): array {
 
-    $path = parse_url($this->getExternalUrl(), PHP_URL_PATH);
-    //$path = $this->getEntity()->toUrl()->toString(TRUE)->getGeneratedUrl();
+    $externalUrl = $this->entity->toUrl()->setAbsolute()->setOption('alias', TRUE)->toString(TRUE)->getGeneratedUrl();
+    $path = parse_url($externalUrl, PHP_URL_PATH);
     $path = trim($path, '/');
 
     $data = [];
     // need to get purlPath value from entity
-    //$data['purlPath'] = $this->getDomain() . '/demo/' . $path;
     $data['purlPath'] = $this->purlPath;
     $data['type'] = '301';
     $data['target'] = $this->getTarget() . '/' . $path;
@@ -148,9 +147,8 @@ class UpdatePurl extends UpdateIdentifier {
     }
     $purlList =  $this->getEntity()->get($field)->getValue();
     foreach ($purlList as $purl) {
-      dump($purl);
       $this->logger->info("DEBUG run update for identifier {$purl['uri']}");
-      $this->purlPath = str_replace($this->getHost(), '', $purl['uri']);
+      $this->purlPath = parse_url($purl['uri'], PHP_URL_PATH);
       $this->purlId = $this->getPurlId($this->purlPath);
       $this->logger->info("purlPath {$this->purlPath} has purlId {$this->purlId}");
 
