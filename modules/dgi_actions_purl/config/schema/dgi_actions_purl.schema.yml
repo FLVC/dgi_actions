@@ -22,3 +22,10 @@ dgi_actions.service_data_type.purl:
       label: 'PURL Target Hostname'
       type: uri
       description: 'Target site hostname for the PURL service.'
+
+action.configuration.dgi_actions_mint_purl:
+  type: dgi_actions_action_mint_base
+action.configuration.dgi_actions_update_purl:
+  type: dgi_actions_action_update_base
+action.configuration.dgi_actions_delete_purl:
+  type: dgi_actions_action_delete_base

@@ -85,3 +85,6 @@ dgi_actions_action_mint_base:
 
 dgi_actions_action_delete_base:
   type: dgi_actions_action_identifier_base
+
+dgi_actions_action_update_base:
+  type: dgi_actions_action_identifier_base
