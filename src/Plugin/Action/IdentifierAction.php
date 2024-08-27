@@ -2,21 +2,24 @@
 
 namespace Drupal\dgi_actions\Plugin\Action;
 
+use Drupal\Core\Action\ConfigurableActionBase;
+use Drupal\Core\Entity\DependencyTrait;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\dgi_actions\Entity\IdentifierInterface;
 use Drupal\dgi_actions\Utility\IdentifierUtils;
-use Drupal\Core\Action\ConfigurableActionBase;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for Identifier Actions.
  */
 abstract class IdentifierAction extends ConfigurableActionBase implements ContainerFactoryPluginInterface {
+
+  use DependencyTrait;
 
   /**
    * Identifier config.
@@ -125,7 +128,7 @@ abstract class IdentifierAction extends ConfigurableActionBase implements Contai
    * @throws \Drupal\Core\Entity\Exception\UndefinedLinkTemplateException
    */
   public function getExternalUrl(): string {
-    return $this->entity->toUrl()->setAbsolute()->toString(TRUE)->getGeneratedUrl();
+    return $this->entity->toUrl()->setAbsolute()->setOption('alias', TRUE)->toString(TRUE)->getGeneratedUrl();
   }
 
   /**
@@ -202,6 +205,17 @@ abstract class IdentifierAction extends ConfigurableActionBase implements Contai
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $this->configuration['identifier_entity'] = $form_state->getValue('identifier_entity');
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function calculateDependencies() : array {
+    $this->addDependencies(parent::calculateDependencies());
+    if ($this->identifier) {
+      $this->addDependency($this->identifier->getConfigDependencyKey(), $this->identifier->getConfigDependencyName());
+    }
+    return $this->dependencies;
   }
 
 }
