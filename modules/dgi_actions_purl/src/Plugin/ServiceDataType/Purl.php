@@ -54,7 +54,7 @@ class Purl extends ServiceDataTypeBase {
       '#required' => TRUE,
     ];
     $form['apikey'] = [
-      '#type' => 'textfield',
+      '#type' => 'password',
       '#title' => $this->t('API Key'),
       '#description' => $this->t('API key for the PURL service endpoints.'),
       '#default_value' => $this->configuration['apikey'],
