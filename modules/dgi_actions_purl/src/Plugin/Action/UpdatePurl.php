@@ -77,7 +77,7 @@ class UpdatePurl extends UpdateIdentifier {
     if ($this->purlId > 0) {
         $uri .= "/{$this->purlId}";
     }
-    $this->logger->info("DEBUG update URI = {$uri}");
+    //$this->logger->info("DEBUG update URI = {$uri}");
     return $uri;
   }
 
@@ -92,7 +92,7 @@ class UpdatePurl extends UpdateIdentifier {
     if ($this->purlId > 0) {
         $requestType = 'PUT';
     }
-    $this->logger->info("DEBUG update RequestType = {$requestType}");
+    //$this->logger->info("DEBUG update RequestType = {$requestType}");
     return $requestType;
   }
 
@@ -128,29 +128,29 @@ class UpdatePurl extends UpdateIdentifier {
    */
   protected function update(): void {
     // check for existing purlId
-    $this->logger->info("DEBUG in update");
+    //$this->logger->info("DEBUG in update");
     $field = $this->getIdentifier()->get('field');
     if ($this->getEntity()->hasField($field)) {
-      $this->logger->info("DEBUG entity has identifier field");
+      //$this->logger->info("DEBUG entity has identifier field");
       $field_value = $this->getEntity()->get($field)->getString();
       if (!empty($field_value)) {
-        $this->logger->info("DEBUG entity has identifier value {$field_value}");
+        //$this->logger->info("DEBUG entity has identifier value {$field_value}");
       }
       else {
-        $this->logger->info("DEBUG entity has empty identifier field");
+        //$this->logger->info("DEBUG entity has empty identifier field");
         return;
       }
     }
     else {
-      $this->logger->info("DEBUG entity is missing identifier field");
+      //$this->logger->info("DEBUG entity is missing identifier field");
       return;
     }
     $purlList =  $this->getEntity()->get($field)->getValue();
     foreach ($purlList as $purl) {
-      $this->logger->info("DEBUG run update for identifier {$purl['uri']}");
+      //$this->logger->info("DEBUG run update for identifier {$purl['uri']}");
       $this->purlPath = parse_url($purl['uri'], PHP_URL_PATH);
       $this->purlId = $this->getPurlId($this->purlPath);
-      $this->logger->info("purlPath {$this->purlPath} has purlId {$this->purlId}");
+      //$this->logger->info("purlPath {$this->purlPath} has purlId {$this->purlId}");
 
       $this->handleUpdateResponse($this->purlRequest());
     }

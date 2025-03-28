@@ -100,29 +100,29 @@ class DeletePurl extends DeleteIdentifier {
    */
   protected function delete(): void {
     // check for existing purlId
-    $this->logger->info("DEBUG in delete");
+    //$this->logger->info("DEBUG in delete");
     $field = $this->getIdentifier()->get('field');
     if ($this->getEntity()->hasField($field)) {
-      $this->logger->info("DEBUG entity has identifier field");
+      //$this->logger->info("DEBUG entity has identifier field");
       $field_value = $this->getEntity()->get($field)->getString();
       if (!empty($field_value)) {
-        $this->logger->info("DEBUG entity has identifier value {$field_value}");
+        //$this->logger->info("DEBUG entity has identifier value {$field_value}");
       }
       else {
-        $this->logger->info("DEBUG entity has empty identifier field");
+        //$this->logger->info("DEBUG entity has empty identifier field");
         return;
       }
     }
     else {
-      $this->logger->info("DEBUG entity is missing identifier field");
+      //$this->logger->info("DEBUG entity is missing identifier field");
       return;
     }
     $purlList =  $this->getEntity()->get($field)->getValue();
     foreach ($purlList as $purl) {
-      $this->logger->info("DEBUG run delete for identifier {$purl['uri']}");
+      //$this->logger->info("DEBUG run delete for identifier {$purl['uri']}");
       $this->purlPath = parse_url($purl['uri'], PHP_URL_PATH);
       $this->purlId = $this->getPurlId($this->purlPath);
-      $this->logger->info("purlPath {$this->purlPath} has purlId {$this->purlId}");
+      //$this->logger->info("purlPath {$this->purlPath} has purlId {$this->purlId}");
       if ($this->purlId > 0) {
         $this->handleDeleteResponse($this->purlRequest());
       }

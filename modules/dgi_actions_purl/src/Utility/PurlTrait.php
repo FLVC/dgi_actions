@@ -138,7 +138,7 @@ trait PurlTrait {
       'headers' => [
         'Content-Type' => 'application/json;charset=UTF-8'
     ]]);
-    $this->logger->info("DEBUG trying {$this->getHost()}/admin/purl{$purlPath}");
+    //$this->logger->info("DEBUG trying {$this->getHost()}/admin/purl{$purlPath}");
     try {
       $response = $this->getClient()->send($request, $requestParams);
       $body = $response->getBody();

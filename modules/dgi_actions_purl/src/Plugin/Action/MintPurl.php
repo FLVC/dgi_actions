@@ -108,7 +108,7 @@ class MintPurl extends MintIdentifier {
    * {@inheritdoc}
    */
   protected function mint(): string {
-    $this->logger->info("DEBUG in mint for missing identifier");
+    //$this->logger->info("DEBUG in mint for missing identifier");
     return $this->getIdentifierFromResponse($this->purlRequest());
   }
 
