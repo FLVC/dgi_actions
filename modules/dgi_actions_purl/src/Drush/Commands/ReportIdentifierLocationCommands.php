@@ -137,6 +137,7 @@ class ReportIdentifierLocationCommands extends DrushCommands {
         $identifier_list =  $entity->get($identifier->getField())->getValue();
         foreach ($identifier_list as $identifier_field) {
           $identifier_location = $identifier_field['uri'];
+          $identifier_location = str_replace('http:', 'https:', $identifier_location);
           $response = $this->httpClient->request('HEAD', $identifier_location, [
             'allow_redirects' => FALSE,
             'http_errors' => FALSE,
@@ -146,7 +147,7 @@ class ReportIdentifierLocationCommands extends DrushCommands {
           $path = parse_url($externalUrl, PHP_URL_PATH);
           $path = trim($path, '/');
           $expected_target = $identifier->getServiceData()->getData()['target'] . '/' . $path;
-          $identifier_path = str_replace($identifier->getServiceData()->getData()['host'],'',$identifier_location);
+          $identifier_path = parse_url($identifier_location, PHP_URL_PATH);
           fwrite($reportfile, t("@purl,@loc1,@loc2\n", ['@purl' => $identifier_path, '@loc1' => $expected_target, '@loc2' => $current_target]));
           fwrite($tabfile, t("@purl\t302\t@inst\t@target\n", ['@purl' => $identifier_path, '@inst' => $institution, '@target' => $expected_target]));
         }
