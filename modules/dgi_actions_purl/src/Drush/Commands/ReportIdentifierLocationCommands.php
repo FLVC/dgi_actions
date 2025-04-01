@@ -90,11 +90,18 @@ class ReportIdentifierLocationCommands extends DrushCommands {
    */
   public function reportBatch(IdentifierInterface $identifier, &$context): void {
     $institution = $identifier->getServiceData()->getData()['institution'];
-    $report_path = \Drupal::service('file_system')->getTempDirectory() . '/' . $institution . '.' . $identifier->id() . '.report.csv';
+    $report_path = \Drupal::service('file_system')->getTempDirectory() . '/' . $institution . '.' . $identifier->id() . '.report.tsv';
     $tab_path = \Drupal::service('file_system')->getTempDirectory() . '/' . $institution . '.' . $identifier->id() . '.load.tsv';
-    $reportfile = fopen($report_path, "a");
-    $tabfile = fopen($tab_path, "a");
     $sandbox =& $context['sandbox'];
+    if (!isset($sandbox['total'])) {
+      $reportfile = fopen($report_path, "w");
+      $tabfile = fopen($tab_path, "w");
+      fwrite($reportfile, t("PURL\tTitle\tISLE Location\tCurrent Target\n"));
+    }
+    else {
+      $reportfile = fopen($report_path, "a");
+      $tabfile = fopen($tab_path, "a");
+    }
     $entity_type = $identifier->getEntity();
     $entity_id_key = $this->entityTypeManager->getDefinition($entity_type)->getKeys()['id'];
     $entity_storage = $this->entityTypeManager->getStorage($entity_type);
@@ -137,19 +144,24 @@ class ReportIdentifierLocationCommands extends DrushCommands {
         $identifier_list =  $entity->get($identifier->getField())->getValue();
         foreach ($identifier_list as $identifier_field) {
           $identifier_location = $identifier_field['uri'];
-          $identifier_location = str_replace('http:', 'https:', $identifier_location);
-          $response = $this->httpClient->request('HEAD', $identifier_location, [
-            'allow_redirects' => FALSE,
-            'http_errors' => FALSE,
-          ]);
-          $current_target = $response->getHeaderLine('Location');
-          $externalUrl = $entity->toUrl()->setAbsolute()->setOption('alias', TRUE)->toString(TRUE)->getGeneratedUrl();
-          $path = parse_url($externalUrl, PHP_URL_PATH);
-          $path = trim($path, '/');
-          $expected_target = $identifier->getServiceData()->getData()['target'] . '/' . $path;
-          $identifier_path = parse_url($identifier_location, PHP_URL_PATH);
-          fwrite($reportfile, t("@purl,@loc1,@loc2\n", ['@purl' => $identifier_path, '@loc1' => $expected_target, '@loc2' => $current_target]));
-          fwrite($tabfile, t("@purl\t302\t@inst\t@target\n", ['@purl' => $identifier_path, '@inst' => $institution, '@target' => $expected_target]));
+          if (strpos($identifier_location, 'purl') !== false) {
+            $identifier_location = str_replace('http:', 'https:', $identifier_location);
+            $response = $this->httpClient->request('HEAD', $identifier_location, [
+              'allow_redirects' => FALSE,
+              'http_errors' => FALSE,
+            ]);
+            $current_target = $response->getHeaderLine('Location');
+            $externalUrl = $entity->toUrl()->setAbsolute()->setOption('alias', TRUE)->toString(TRUE)->getGeneratedUrl();
+            $path = parse_url($externalUrl, PHP_URL_PATH);
+            $path = trim($path, '/');
+            $expected_target = $identifier->getServiceData()->getData()['target'] . '/' . $path;
+            $identifier_path = parse_url($identifier_location, PHP_URL_PATH);
+            fwrite($reportfile, t("@purl\t@title\t@loc1\t@loc2\n", ['@purl' => $identifier_path, '@title' =>  $entity->getTitle(), '@loc1' => $expected_target, '@loc2' => $current_target]));
+            fwrite($tabfile, t("@purl\t302\t@inst\t@target\n", ['@purl' => $identifier_path, '@inst' => $institution, '@target' => $expected_target]));
+          }
+          else {
+            $this->messenger->addError(t('Found field_purl value that is not a PURL: @url', ['@url' => $identifier_location]));
+          }
         }
       }
       catch (\Exception $e) {
